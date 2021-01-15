@@ -1,0 +1,42 @@
+name: ci_unittest
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  unittest:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version: [3.6, 3.7, 3.8]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python_version }}
+
+      - run: echo "::set-output name=date::$(/bin/date "+%Y-%U")"
+        id: get-date
+
+      - run: echo "::set-output name=dir::$(pip cache dir)"
+        id: pip-cache
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ steps.get-date.outputs.date }}-py${{ matrix.python_version }}
+          restore-keys: |
+            ${{ steps.get-date.outputs.date }}-py${{ matrix.python_version }}
+            ${{ steps.get-date.outputs.date }}-py
+
+      - run: pip install wheel pip setuptools -U
+      - run: pip install ".[testing]" --progress-bar off -Uf https://download.pytorch.org/whl/cpu/torch_stable.html
+      - run: bash ./scripts/run_tests.sh
+        env:
+          TORCH_UTILS_COLLECT_ENV: 1

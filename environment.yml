@@ -1,0 +1,21 @@
+# conda / mamba env update -f environment.yml
+
+name: package
+
+channels:
+  - pytorch
+  - conda-forge
+
+dependencies:
+  - python=3.8
+  - cpuonly
+  - pip
+  - numpy
+  - pytorch
+  - ignite
+  - pytorch-lightning
+
+  - pip:
+      - prettytable
+      - coverage
+      - parameterized

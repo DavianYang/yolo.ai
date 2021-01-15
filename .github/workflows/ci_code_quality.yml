@@ -1,0 +1,27 @@
+name: ci_code_quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  code_quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+
+      - run: pip install wheel pip setuptools -U
+      - run: pip install ".[dev]" --progress-bar off -Uf https://download.pytorch.org/whl/cpu/torch_stable.html
+      - run: echo "CODEQL_PYTHON=$(which python)" >> $GITHUB_ENV
+
+      - uses: github/codeql-action/init@v1
+        with:
+          languages: python
+          setup-python-dependencies: false
+
+      - uses: github/codeql-action/analyze@v1
+      - run: bash ./scripts/run_code_quality.sh

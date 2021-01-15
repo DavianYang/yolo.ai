@@ -1,0 +1,45 @@
+# ------------
+# black config
+# ------------
+[tool.black]
+line-length = 88
+target-version = ['py36', 'py37', 'py38']
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | assets
+  )/
+  | foo.py           # also separately exclude a file named foo.py in
+                     # the root of the project
+)
+'''
+
+# ------------
+# isort config
+# ------------
+[tool.isort]
+profile="black"
+
+# -------------
+# pylint config
+# -------------
+[tool.pylint.reports]
+output-format="colorized"
+reports="yes"
+
+[tool.pylint.typecheck]
+generated-members="numpy.*,torch.*,cv2.*,np.*"
+
+[tool.pylint.design]
+max-args=6
