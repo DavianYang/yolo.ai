@@ -29,10 +29,10 @@ VERSION = find_version("package", "__init__.py")
 extra = {}
 
 install_requires = [
-    "torch>=1.7.0",
-    "pytorch-ignite>=0.4.2",
-    "pytorch-lightning>=1.0.0",
-    "prettytable>=2.0.0",
+    # "torch>=1.7.0",
+    # "pytorch-ignite>=0.4.2",
+    # "pytorch-lightning>=1.0.0",
+    # "prettytable>=2.0.0",
 ]
 
 extra["testing"] = ["coverage>=5.3", "parameterized>=0.7.4"]
@@ -42,11 +42,11 @@ extra["dev"] = extra["testing"] + extra["quality"]
 
 
 setup(
-    name="toydet",
+    name="yolo.ai",
     version=VERSION,
-    author="toyai",
-    url="https://github.com/toyai/template",
-    description="Just template",
+    author="DavianYang",
+    url="https://github.com/DavianYang/yolo.ai",
+    description="Yolo Implementation",
     long_description_content_type="text/markdown",
     long_description=readme,
     license="MIT",
