@@ -29,10 +29,10 @@ VERSION = find_version("package", "__init__.py")
 extra = {}
 
 install_requires = [
-    # "torch>=1.7.0",
-    # "pytorch-ignite>=0.4.2",
-    # "pytorch-lightning>=1.0.0",
-    # "prettytable>=2.0.0",
+    "torch>=1.7.0",
+    "pytorch-ignite>=0.4.2",
+    "pytorch-lightning>=1.0.0",
+    "prettytable>=2.0.0",
 ]
 
 extra["testing"] = ["coverage>=5.3", "parameterized>=0.7.4"]
