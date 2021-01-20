@@ -92,3 +92,79 @@ class Yolov1(nn.Module):
             nn.LeakyReLU(0.1),
             nn.Linear(496, S * S * (C + B * 5))
         )
+
+
+class YoloLoss(nn.Module):
+    def __init__(
+        self,
+        S = 7,
+        B = 2,
+        C = 20
+    ):
+        super().__init__()
+        self.mse = nn.MSELoss(reduction="sum")
+        self.S, self.B, self.C = S, B, C
+        self.lambda_noobj = 0.5
+        self.lambda_coord = 5
+        
+    
+    def forward(self, prediction, target):
+        pred = prediction.reshape(-1, self.S, self.S, self.C + self.B * 5)
+        
+        iou_b1 = IOU(pred[..., 21:25], target[..., 21:25])
+        iou_b2 = IOU(pred[..., 26:30], target[..., 26:30])
+        
+        ious = torch.cat([iou_b1.unsqueeze(0), iou_b2.unsqueeze(0)])
+        
+        iou_maxes, bestbox = torch.max(ious, dim=0)
+        
+        exists_box = target[..., 20].unsequeeze(3)
+        
+        
+        # For box coordinates
+        box_preds = exists_box * ( 
+            (bestbox * prediction[..., 26:30] + (1 - bestbox) * prediction[..., 21:25])
+        )
+        
+        box_targets = exists_box * target[..., 21:25]
+        box_preds[..., 2:4] = torch.sign(box_preds[..., 2:4]) * torch.sqrt(torch.abs(box_preds[..., 2:4] + 1e-6))
+        
+        box_targets[..., 2:4] = torch.sqrt(box_targets[..., 2:4])
+        
+        box_loss = self.mse(torch.flatten(box_preds, end_dim=-2), torch.flatten(box_targets, end_dim=-2))
+        
+        # For object loss
+        pred_box = (
+            bestbox * prediction[..., 25:26] + (1 - bestbox) * prediction[..., 20:21]
+        )
+        
+        object_loss = self.mse(
+            torch.flatten(exists_box * pred_box),
+            torch.flatten(exists_box * target[..., 20:21])
+        )
+        
+        # For no object loss
+        no_object_loss = self.mse(
+            torch.flatten((1 - exists_box) * prediction[..., 20:21], start_dim=1),
+            torch.flatten((1 - exists_box) * target[..., 20:21], start_dim=1)
+        )
+        
+        no_object_loss = self.mse(
+            torch.flatten((1 - exists_box) * prediction[..., 25:26], start_dim=1),
+            torch.flatten((1 - exists_box) * target[..., 25:26], start_dim=1)
+        )
+        
+        # For class loss
+        class_loss = self.mse(
+            torch.flatten(exists_box * prediction[..., :20], end_dim=-2),
+            torch.flatten(exists_box * target[..., :20], end_dim=-2)
+        )
+        
+        loss = (
+            self.lambda_coord * box_loss
+            + object_loss
+            + self.lambda_noobj * no_object_loss
+            + class_loss
+        )
+        
+        return loss
