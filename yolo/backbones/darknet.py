@@ -14,21 +14,30 @@ class DarkNet19(nn.Module):
         )
         self.conv3 = nn.Sequential(
             ConvBlock(64, 128, kernel=3, padding=1),
-            ResBlock(128)
+            ConvBlock(128, 64, kernel=1),
+            ConvBlock(64, 128, kernel=3, padding=1),
+            nn.MaxPool2d((2, 2), 2)
         )
         self.conv4 = nn.Sequential(
             ConvBlock(128, 256, kernel=3, padding=1),
-            ResBlock(256)
+            ConvBlock(256, 128, kernel=1),
+            ConvBlock(128, 256, kernel=3, padding=1),
         )
         self.maxpool_4 = nn.MaxPool2d((2, 2), 2)
         self.conv5 = nn.Sequential(
             ConvBlock(256, 512, kernel=3, padding=1),
-            ResBlock(512, blocks=2),
+            ConvBlock(512, 256, kernel=1),
+            ConvBlock(256, 512, kernel=3, padding=1),
+            ConvBlock(512, 256, kernel=1),
+            ConvBlock(256, 512, kernel=3, padding=1),
         )
         self.maxpool_5 = nn.MaxPool2d((2, 2), 2)
         self.conv6 = nn.Sequential(
             ConvBlock(512, 1024, kernel=3, padding=1),
-            ResBlock(1024, blocks=2)
+            ConvBlock(1024, 512, kernel=1),
+            ConvBlock(512, 1024, kernel=3, padding=1),
+            ConvBlock(1024, 512, kernel=1),
+            ConvBlock(512, 1024, kernel=3, padding=1),
         )
         
     
