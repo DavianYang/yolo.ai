@@ -1,3 +1,5 @@
+from collections import Counter
+
 def IOU(boxes_preds, boxes_labels, box_format="midpoint"):
     if box_format == "midpoint":
         box1_x1 = boxes_preds[..., 0:1] - boxes_preds[..., 2:3] / 2
@@ -32,9 +34,6 @@ def IOU(boxes_preds, boxes_labels, box_format="midpoint"):
     union = box1_area + box2_area - intersection
 
     return intersection / (union + 1e-6)
-
-
-from collections import Counter
 
 
 def mAP(pred_boxes, true_boxes, iou_threshold=0.5, box_format='corners', num_classes=20):
