@@ -43,3 +43,25 @@ class ResBlock(nn.Module):
         for module in self.module_list:
             x = module(x) + x
         return x
+    
+    
+class ReorgLayer(nn.Module):
+    def __init__(
+        self,
+        stride: int
+    ):
+        """ To combine middle-level features and high-level features and getter classification accuracy """
+        
+        super().__init__()
+        self.stride = stride
+        
+    def forward(self, x):
+        batch_size, channels, height, width = x.size()
+        _height, _width = height // self.stride, width // self.stride
+        
+        x = x.view(batch_size, channels, _height, self.stride, _width, self.stride).transpose(3, 4).contiguous()
+        x = x.view(batch_size, channels, _height * _width, self.stride * self.stride).transpose(2, 3).contiguous()
+        x = x.view(batch_size, channels, self.stride * self.stride, _height * _width).transpose(1, 2).contiguous()
+        x = x.view(batch_size, -1, _height, _width)
+        
+        return x
