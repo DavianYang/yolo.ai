@@ -1,5 +1,7 @@
 from collections import Counter
 
+import torch
+
 def IOU(boxes_preds, boxes_labels, box_format="midpoint"):
     if box_format == "midpoint":
         box1_x1 = boxes_preds[..., 0:1] - boxes_preds[..., 2:3] / 2
