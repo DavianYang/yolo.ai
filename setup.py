@@ -42,11 +42,11 @@ extra["dev"] = extra["testing"] + extra["quality"]
 
 
 setup(
-    name="toydet",
+    name="yolo.ai",
     version=VERSION,
-    author="toyai",
-    url="https://github.com/toyai/template",
-    description="Just template",
+    author="DavianYang",
+    url="https://github.com/DavianYang/yolo.ai",
+    description="Yolo Implementation",
     long_description_content_type="text/markdown",
     long_description=readme,
     license="MIT",
