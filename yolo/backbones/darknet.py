@@ -1,11 +1,10 @@
-from typing import Dict, List, Any
+from typing import List, Any, Tuple
 
-import torch
 import torch.nn as nn
 from torch import Tensor
 
-from yolo.modules.modules import ConvBlock, ResBlock, ReorgBlock
-from yolo.backbones.config import darknet_cfg, darknet19_cfg_head, darknet19_cfg_tail
+from yolo.config.darknet_cfg import darknet_cfg, darknet19_cfg_head, darknet19_cfg_tail, darknet53_base_cfg
+from yolo.modules.modules import make_layers
 
 class DarkNet(nn.Module):
     def __init__(
@@ -15,36 +14,29 @@ class DarkNet(nn.Module):
     ) -> None:
         super().__init__()
         self.in_channels = in_channels
-        self.features = self._make_layers(cfg)
+        self.features = make_layers(cfg)
         
     def forward(self, x: Tensor) -> Tensor:
         return self.features(x)
-    
-    def _make_layers(self, cfg: List[tuple]) -> nn.Sequential:
-        layers = []
-        in_channels = self.in_channels
+  
+class DarkNet53(nn.Module):
+    def __init__(self, cfg: List[tuple]) -> None:
+        super().__init__()
+        self.part1 = make_layers(cfg[0], 3)
+        self.part2 = make_layers(cfg[1], 128)
+        self.part3 = make_layers(cfg[2], 256)
+        self.part4 = make_layers(cfg[3], 512)
         
-        for x in cfg:
-            if "Conv" in str(type(x)):
-                layers += [ConvBlock(in_channels, x.filters, kernel=x.kernel_size, stride=x.stride, padding=x.padding)]
-                
-                in_channels = x.filters
-            elif "Max" in str(type(x)):
-                layers += [nn.MaxPool2d(kernel_size=x.kernel_size, stride=x.stride)]
-            elif "Repeat" in str(type(x)):
-                convs = x.blocks
-                num_repeats = x.nums
-                
-                for _ in range(num_repeats):
-                    for conv in convs:
-                        layers += [ConvBlock(in_channels, conv.filters, kernel=conv.kernel_size, stride=conv.stride, padding=conv.padding)]
-                        
-                        in_channels = conv.filters
-        return nn.Sequential(*layers)
-            
+    def forward(self, x: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
+        x = self.part1(x)
+        large = self.part2(x)
+        medium = self.part3(large)
+        small = self.part4(medium)
+        return small, medium, large
+
 def _darknet(
     cfg: List[tuple],
-    in_channels: int = 3
+    in_channels: int = 3,
     **kwargs: Any
 ) -> DarkNet:
     model = DarkNet(cfg, in_channels)
@@ -62,3 +54,6 @@ def darknet19(mode: str = "full") -> DarkNet:
     elif mode == "tail":
         cfg = darknet19_cfg_tail
     return _darknet(cfg)
+
+def darknet53() -> DarkNet53:
+    return DarkNet53(cfg=darknet53_base_cfg)
