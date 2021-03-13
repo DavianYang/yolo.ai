@@ -1,70 +1,124 @@
-from typing import Optional, Callable, Tuple, List
+from xml.etree import ElementTree as ET
+from typing import Callable, Optional
+
+import copy
+from PIL import Image, ImageFile
 
 import torch
-import numpy as np
-
-from PIL import Image
-import xml.etree.ElementTree as ET
 from torchvision.datasets import VOCDetection
+from torchvision.ops.boxes import box_iou
 
-class VOCDetection(VOCDetection):
+# ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+VOC_CLASSES = [
+    "aeroplane",
+    "bicycle",
+    "bird",
+    "boat",
+    "bottle",
+    "bus",
+    "car",
+    "cat",
+    "chair",
+    "cow",
+    "diningtable",
+    "dog",
+    "horse",
+    "motorbike",
+    "person",
+    "pottedplant",
+    "sheep",
+    "sofa",
+    "train",
+    "tvmonitor",
+]
+
+class VOCDataset(VOCDetection):
     def __init__(
         self,
+        anchor_boxes: list,
         root: str = './datasets',
         year: str = '2012',
         image_set: str = 'train',
         download: bool = False,
-        transform: Optional[Callable] = None
-        split: int = 7,
-        box: int = 2,
-        classes: int = 20
+        transforms: Optional[Callable] = None,
+        num_classes: int = 20,
     ):
         super().__init__(root, year, image_set, download)
-        self.transform = transform
-        self.split = split
-        self.box = box
-        self.classes = classes
+        self.transforms = transforms
+        self.anchor_boxes = torch.tensor(anchor_boxes)
+        self.num_classes = num_classes
         
-    
-    def __getitem__(self, index: int) -> Tuple[np.ndarray, np.ndarray]:
-        image = Image.open(self.images[index])
+    def _generate_label_matrix(self, S, targets, anchor_boxes):
+        label_matrix = torch.zeros(
+            (S, S, len(anchor_boxes), 5 + self.num_classes), dtype=torch.float64
+        )
+
+        for target in targets:
+            class_label, xmin, ymin, xmax, ymax = target
+            
+            x = xmin
+            y = ymin
+            w = xmax - xmin
+            h = ymax - ymin
+            
+            x = xmin / 416
+            y = ymin / 416
+            w = (xmax - xmin) / 416
+            h = (ymax - ymin) / 416
+            
+            i, j = int(S * x), int(S * y)
+            x_cell, y_cell = S * x, S * y
+            # We need iou of anchor box and bbox as if they have same xmin and ymin, as only the width and height matters while assigning the bbox to anchor box.
+            anchor_boxes[:, 0] = xmin
+            anchor_boxes[:, 1] = ymin
+            anchor_boxes[:, 2] = xmin + anchor_boxes[:, 2] / 2
+            anchor_boxes[:, 3] = ymin + anchor_boxes[:, 3] / 2
+
+            width_cell, height_cell = (w * S, h * S)
+            
+            ious = box_iou(
+                anchor_boxes,
+                torch.tensor([xmin, ymin, xmax, ymax]).unsqueeze(0).float()
+            )
+            
+            _, max_idx = ious.max(0)
+            
+            box_coordinate = torch.tensor([x_cell, y_cell, width_cell, height_cell])
+
+            # set box_coordinate
+            label_matrix[j, i, max_idx[0], :4] = box_coordinate
+            # set confidence score
+            label_matrix[j, i, max_idx[0], 4] = 1
+            # set one hot coding for class label
+            label_matrix[j, i, max_idx[0], 5 + class_label] = 1
+        return label_matrix
+            
+             
+    def __getitem__(self, index):
+        img = Image.open(self.images[index]).convert("RGB")
+        
         root_ = ET.parse(self.annotations[index]).getroot()
         targets = []
-        for obj in root_.iter('object'):
+        for obj in root_.iter("object"):
             target = []
+            target.append(VOC_CLASSES.index(obj.find("name").text))
             bbox = obj.find('bndbox')
-            target.append(CLASSES.index(obj.find('name').text))
-            for xyxy in ('xmin', 'ymin', 'xmax', 'ymax'):
+            for xyxy in ("xmin", "ymin", "xmax", "ymax"):
                 target.append(int(bbox.find(xyxy).text))
-        targets.append(target)
+            targets.append(target)
+        targets = torch.tensor(targets)
         
-        targets = np.array(targets, dtype=np.float32)
+        if self.transforms:
+            pass
         
-        label_matrix = torch.zeros((self.split, self.split, self.box * 5 + self.classes))
-        
-        for target in targets:
-            label, xmin, ymin, xmax, ymax = target.tolist()
-            
-            width = xmax - xmin
-            height = ymax - ymin
-            
-            i, j = int(self.split * ymin), int(self.split * xmin)
-            x_cell, y_cell =  self.split * xmin - j, self.split * ymin - i
-            
-            width_cell, height_cell = (width * self.split, height  * self.split)
-            
-            if label_matrix[i, j, 20] == 0:
-                label_matrix[i, j, 20] = 1
-                
-                box_coord = torch.tensor([x_cell, y_cell, width_cell, height_cell])
-                
-                label_matrix[i, j, 21:25] = box_coord
-                
-                label_matrix[i, j, target[0]] = 1
-            
-        if self.transform is not None:
-            bboxes = targets[..., 1:]
-            image, bboxes = self.transform(image, bboxes)
-            targets[..., 1:] = bboxes
-    
-        return image, label_matrix
+        small_label_matrix = self._generate_label_matrix(
+            13, targets, copy.deepcopy(self.anchor_boxes)[6:9] / (416 / 13)
+        )
+        medium_label_matrix = self._generate_label_matrix(
+            26, targets, copy.deepcopy(self.anchor_boxes)[3:6] / (416 / 26)
+        )
+        large_label_matrix = self._generate_label_matrix(
+            52, targets, copy.deepcopy(self.anchor_boxes)[:3] / (416 / 52)
+        )
+        return img, (small_label_matrix, medium_label_matrix, large_label_matrix)
