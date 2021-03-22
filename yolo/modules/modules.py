@@ -1,4 +1,4 @@
-from typing import Union, Callable, AnyStr, Any
+from typing import Sequence, Union, Callable, AnyStr, Any
 
 import torch
 from torch import nn
@@ -12,8 +12,8 @@ class ConvBlock(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: int,
-        stride: int = 1,
+        kernel_size: Union[int, Sequence],
+        stride: Union[int, Sequence] = 1,    
         padding: int = 0,
         dilation: int = 1,
         groups: int = 1,
@@ -65,8 +65,8 @@ class Upsample(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: int,
-        stride: int = 1,
+        kernel_size: Union[int, Sequence],
+        stride: Union[int, Sequence] = 1,
         padding: int = 0,
     ):
         super().__init__()
@@ -124,8 +124,8 @@ class MBConvBlock(nn.Module):
         self,
         in_channels: int,
         out_channels: int,
-        kernel_size: int,
-        stride: int,
+        kernel_size: Union[int, Sequence],
+        stride: Union[int, Sequence],
         padding: int,
         expand_ratio: float,
         reduction: int = 4, # squeeze excitation
