@@ -1,5 +1,5 @@
 from collections import namedtuple
-from yolo.config.cfg import NUM_CLASSES, NUM_ANCHORS
+# from yolo.config.cfg import NUM_CLASSES, NUM_ANCHORS
 
 convblock = namedtuple("Conv", ["kernel_size", "filters", "stride", "padding"])
 convblock_without_bn = namedtuple("ConvWithoutBN", ["kernel_size", "filters", "stride", "padding"])
