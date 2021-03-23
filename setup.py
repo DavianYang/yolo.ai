@@ -41,23 +41,26 @@ extra["quality"] = ["pylint", "isort[colors]", "black", "flake8"]
 extra["dev"] = extra["testing"] + extra["quality"]
 
 
-setup(
-    name="yolo.ai",
-    version=VERSION,
-    author="DavianYang",
-    url="https://github.com/DavianYang/yolo.ai",
-    description="Yolo Implementation",
-    long_description_content_type="text/markdown",
-    long_description=readme,
-    license="MIT",
-    python_requires=">=3.6.0",
-    packages=find_packages(
-        exclude=(
-            "tests",
-            "tests.*",
-        )
-    ),
-    zip_safe=True,
-    extras_require=extra,
-    install_requires=install_requires,
-)
+if __name__ == "__main__":
+    setup(
+        name="yolo.ai",
+        version=VERSION,
+        author="DavianYang",
+        url="https://github.com/DavianYang/yolo.ai",
+        description="Yolo Implementation",
+        long_description_content_type="text/markdown",
+        long_description=readme,
+        license="MIT",
+        python_requires=">=3.6.0",
+        packages=find_packages(
+            exclude=(
+                "cfg",
+                "tools"
+                "tests",
+                "tests.*",
+            )
+        ),
+        zip_safe=True,
+        extras_require=extra,
+        install_requires=install_requires,
+    )
