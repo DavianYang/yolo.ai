@@ -6,7 +6,7 @@
 ## Squeeze And Excitation
 #### Image Model Blocks
 <div align="center">
-    <img src="yolo.ai/images/modules/squeeze_and_excitation.png">
+    <img src="./images/modules/squeeze_and_excitation.png">
 </div>
 
 - The block has a convolutional block as an input.
