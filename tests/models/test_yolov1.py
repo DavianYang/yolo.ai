@@ -3,12 +3,9 @@ from unittest import TestCase, main
 import torch
 from torch import nn
 
-from yolo.models.yolov1 import (
-    Yolov1,
-    ConvBlock
-)
+from yolo.models.yolo_v1.model import Yolov1
 
-# Todo: Implement TestYolov1    
+# Todo: Implement TestYolov1   
 
-if if __name__ == "__main__":
+if __name__ == "__main__":
     main()
