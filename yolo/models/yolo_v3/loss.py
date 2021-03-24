@@ -10,11 +10,12 @@ class YOLOLoss(nn.Module):
         super().__init__()
         self.anchor_boxes = anchor_boxes
         self.mse = nn.MSELoss()
-        self.anchor_boxes = anchor_boxes
+        self.anchor_boxes = anchor_boxes.to(device)
         self.S = S
         self.device = device
         
     def forward(self, pred, target):
+        pred = pred.permute(0, 2, 3, 1, 4)
         exist_mask = target[..., 4:5]
         existing_boxes = exist_mask * pred
         cell_idx = torch.arange(self.S, device=self.device)
@@ -29,7 +30,7 @@ class YOLOLoss(nn.Module):
             * self.anchor_boxes[:, 2].view([1, 1, 1, -1, 1])
             * exist_mask
             * torch.exp(pred[..., 3:4])
-        )
+        ).to(self.device)
         bh = (
             exist_mask
             * self.anchor_boxes[:, 3].view([1, 1, 1, -1, 1])
@@ -74,60 +75,9 @@ class YOLOv3Loss(nn.Module):
         self.medium_loss = YOLOLoss(self.anchor_boxes[1] / (416 / 26), S = 26, device=device)
         self.large_loss = YOLOLoss(self.anchor_boxes[0] / (416 / 52), S = 52, device=device)
     
-    def forward(self, pred, target, device):
-        s_loss = self.small_loss(pred[0], target[0], device)
-        m_loss = self.medium_loss(pred[1], target[1], device)
-        l_loss = self.large_loss(pred[2], target[2], device)
+    def forward(self, pred, target):
+        s_loss = self.small_loss(pred[0], target[0])
+        m_loss = self.medium_loss(pred[1], target[1])
+        l_loss = self.large_loss(pred[2], target[2])
         
         return s_loss + m_loss + l_loss
-        
-
-# class YOLOLoss(nn.Module):
-#     def __init__(self):
-#         super().__init__()
-#         self.mse = nn.MSELoss()
-#         self.bce = nn.BCEWithLogitsLoss()
-#         self.entropy = nn.CrossEntropyLoss()
-#         self.sigmoid = nn.Sigmoid()
-        
-#         # Constants
-#         self.lambda_class = 1
-#         self.lambda_noobj = 10
-#         self.lambda_obj = 1
-#         self.lambda_box = 10
-        
-    
-#     def forward(self, predictions, target, anchors):
-#         obj = target[..., 0] == 1
-#         noobj = target[..., 0] == 0
-        
-#         # No Object Loss
-#         no_object_loss = self.bce(
-#             (predictions[..., 0:1][noobj], (target[..., 0:1][noobj]))
-#         )
-        
-#         # Object Loss
-#         anchors = anchors.reshape(1, 3, 1, 1, 2)
-#         # bx, by = sigmoid(x, y), w, h = p_w * exp(t_w)
-#         box_preds = torch.cat([self.sigmoid(predictions[..., 1:3]), torch.exp(predictions[..., 3:5] * anchors)], dim=-1)
-#         iou = IOU(box_preds[obj], target[..., 1:5][obj]).detach()
-#         object_loss = self.bce((predictions[..., 0:1][obj]), (iou * target[..., 0:1]))
-        
-#         # Box Coordinate Loss
-#         predictions[..., 1:3] = self.sigmoid(predictions[..., 1:3])
-#         target[...,3:5] = torch.log(
-#             (1e-16 + target[..., 3:5] / anchors)
-#         )
-#         box_loss = self.mse(predictions[..., 1:5][obj], target[..., 1:5][obj])
-        
-#         # Class Loss
-#         class_loss = self.entropy(
-#             (predictions[..., 5:][obj]), (target[..., 5][obj].long())
-#         )
-        
-#         return (
-#             self.lambda_box * box_loss
-#             + self.lambda_obj * object_loss
-#             + self.lambda_noobj * no_object_loss
-#             + self.lambda_class * class_loss
-#         )
