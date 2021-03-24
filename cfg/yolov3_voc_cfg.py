@@ -18,3 +18,11 @@ model = dict(
         class_loss=dict(type='Class Loss')
     )
 )
+
+img_scale = None
+
+training_pipeline = []
+testing_pipeline = []
+val_pipeline = []
+
+data = dict()

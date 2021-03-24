@@ -3,7 +3,7 @@ from typing import List, Any, Tuple
 import torch.nn as nn
 from torch import Tensor
 
-from yolo.config.darknet_cfg import darknet_cfg, darknet19_cfg_head, darknet19_cfg_tail, darknet53_base_cfg
+from cfg.backbones.darknet_cfg import darknet_cfg, darknet19_cfg_head, darknet19_cfg_tail, darknet53_base_cfg
 from yolo.modules.modules import ConvBlock, ResBlock, ScalePrediction
 
 def make_layers(cfg: List[tuple], in_channels: int) -> nn.Sequential:
@@ -13,12 +13,6 @@ def make_layers(cfg: List[tuple], in_channels: int) -> nn.Sequential:
         if "Conv" in str(type(x)):
             kernel_size, filters, stride, padding = x
             layers += [ConvBlock(in_channels, filters, kernel_size, stride, padding)]
-
-            in_channels = filters
-
-        elif "ConvWithoutBN" in str(type(x)):
-            kernel_size, filters, stride, padding = x
-            layers += [nn.Conv2d(in_channels, filters, kernel_size, stride, padding)]
 
             in_channels = filters
 
@@ -38,10 +32,6 @@ def make_layers(cfg: List[tuple], in_channels: int) -> nn.Sequential:
                     layers += [ConvBlock(in_channels, conv.filters, kernel_size, stride, padding)]
 
                     in_channels = filters
-        
-        elif "ScalePred" in str(type(x)):
-            num_classes, num_anchors = x
-            layers += [ScalePrediction(in_channels, num_classes, num_anchors)]
 
     return nn.Sequential(*layers)
 

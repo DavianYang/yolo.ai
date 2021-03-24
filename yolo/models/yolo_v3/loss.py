@@ -69,9 +69,10 @@ class YOLOLoss(nn.Module):
 class YOLOv3Loss(nn.Module):
     def __init__(self, anchor_boxes: list, device: str):
         super().__init__()
-        self.small_loss = YOLOLoss(anchor_boxes[2] / (416 / 13), S = 13, device=device)
-        self.medium_loss = YOLOLoss(anchor_boxes[1] / (416 / 26), S = 26, device=device)
-        self.large_loss = YOLOLoss(anchor_boxes[0] / (416 / 52), S = 52, device=device)
+        self.anchor_boxes = torch.tensor(anchor_boxes)
+        self.small_loss = YOLOLoss(self.anchor_boxes[2] / (416 / 13), S = 13, device=device)
+        self.medium_loss = YOLOLoss(self.anchor_boxes[1] / (416 / 26), S = 26, device=device)
+        self.large_loss = YOLOLoss(self.anchor_boxes[0] / (416 / 52), S = 52, device=device)
     
     def forward(self, pred, target, device):
         s_loss = self.small_loss(pred[0], target[0], device)
