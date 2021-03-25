@@ -28,4 +28,4 @@
 - In original residual block, it follow ```wide -> narrow -> wide``` approach. Eg. ```3x3 -> 1x1 -> 3x3```
 - In inverted residual block, it follow ```narrow -> wide -> narrow``` approach. Eg. ```1x1 -> 3x3 -> 1x1```
 > In Efficient Network, SEBlocks are in 1x1 -> 3x3 -> here -> 1x1
-- Check details of Residuals for [here](https://medium.com/@luis_gonzales/a-look-at-mobilenetv2-inverted-residuals-and-linear-bottlenecks-d49f85c12423)
+- Check details of Inverted Residuals for [here](https://medium.com/@luis_gonzales/a-look-at-mobilenetv2-inverted-residuals-and-linear-bottlenecks-d49f85c12423)
