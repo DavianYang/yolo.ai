@@ -4,7 +4,7 @@
 - [Squeeze And Excitation](Squeeze-And-Excitation)
 
 ## Squeeze And Excitation
-##### (Image Model Blocks)
+
 <div align="center">
     <img src="../../images/modules/squeeze_and_excitation.png">
 </div>
@@ -20,7 +20,7 @@
 
 
 ## Inverted Residuals
-##### (Image Model Blocks)
+
 <div align="center">
     <img src="../../images/modules/inverted_residual.png">
 </div>
