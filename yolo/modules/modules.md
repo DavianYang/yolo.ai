@@ -2,6 +2,7 @@
 
 ## Content
 - [Squeeze And Excitation](Squeeze-And-Excitation)
+- [Inverted Residuals](Inverted-Residuals)
 
 ## Squeeze And Excitation
 
