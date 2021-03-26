@@ -3,7 +3,7 @@ import math
 from torch import nn
 from torch import Tensor
 
-from cfg.efficientnet import compound_params_dict
+from cfg.backbones.efficientnet import compound_params_dict
 from yolo.modules.modules import ConvBlock, MBConvBlock
 
 class EfficientNet(nn.Module):
