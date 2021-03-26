@@ -71,7 +71,7 @@ Assuming the input is ```416x416```, so the output of three scale vectors from d
 ### Multi-scale Detector
 
 <div align="center">
-    <img src="../images/detectors/mutiscale_detector.jpeg">
+    <img src="../images/detectors/multiscale_detector.jpeg">
 </div>
 
 
