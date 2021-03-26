@@ -22,7 +22,7 @@ Darknet53 is the feature extractor/backbone of Yolov3. Darknet borrows the idea 
 
 Structure of Yolov3 model
 
-```
+```python
 darknet53_base_cfg = [
     [   
         convblock(3, 32, 1, 1),
@@ -48,7 +48,7 @@ darknet53_base_cfg = [
 
 Then use ```make_layers``` function.
 
-```
+```python
 class DarkNet53(nn.Module):
     def __init__(self, cfg: List[tuple]) -> None:
         super().__init__()
@@ -79,7 +79,7 @@ Assuming the input is ```416x416```, so the output of three scale vectors from d
 
 Like above, the structure of Multi-scale Detector
 
-```
+```python
 small_scale_cfg = [
     [repeat([convblock(1, 512, 1, 0), convblock(3, 1024, 1, 1)], 2)],
     [convblock(1, 512, 1, 0)],
@@ -99,7 +99,7 @@ large_scale_cfg = [
 ]
 ```
 
-```
+```python
 class Yolov3Detector(nn.Module):
     def __init__(self, num_classes: int, num_anchors: int) -> None:
         super().__init__()
@@ -135,8 +135,6 @@ class Yolov3Detector(nn.Module):
         
         return small_out, medium_out, large_out
 ```
-
-
 
 ### Anchor Boxes
 
