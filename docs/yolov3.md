@@ -15,7 +15,7 @@
 Darknet53 is the feature extractor/backbone of Yolov3. Darknet borrows the idea of skip connection from ResNet which let it extends from 19 layers to 53 layers.
 
 <div align="center">
-    <img src="../../images/backbones/darknet_architecture.jpeg">
+    <img src="../images/backbones/darknet_architecture.jpeg">
 </div>
 
 #### Implementation
@@ -71,7 +71,7 @@ Assuming the input is ```416x416```, so the output of three scale vectors from d
 ### Multi-scale Detector
 
 <div align="center">
-    <img src="../../images/backbones/mutiscale_detector.jpeg">
+    <img src="../images/detectors/mutiscale_detector.jpeg">
 </div>
 
 
@@ -135,6 +135,8 @@ class Yolov3Detector(nn.Module):
         
         return small_out, medium_out, large_out
 ```
+
+
 
 ### Anchor Boxes
 
