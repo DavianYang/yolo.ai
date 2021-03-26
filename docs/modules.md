@@ -7,7 +7,7 @@
 ## Squeeze And Excitation
 
 <div align="center">
-    <img src="../../images/modules/squeeze_and_excitation.png">
+    <img src="../images/modules/squeeze_and_excitation.png">
 </div>
 
 - Given convolutional block as an input.
@@ -23,7 +23,7 @@
 ## Inverted Residuals
 
 <div align="center">
-    <img src="../../images/modules/inverted_residual.png">
+    <img src="../images/modules/inverted_residual.png">
 </div>
 
 - In original residual block, it follow ```wide -> narrow -> wide``` approach. Eg. ```3x3 -> 1x1 -> 3x3```
