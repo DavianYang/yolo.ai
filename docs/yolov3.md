@@ -157,6 +157,10 @@ class Yolov3Detector(nn.Module):
 
 > xmin, ymin, xmax, ymax:  coordinates of the box, in normalized image coordinates. xmin is in [0, 1] wher 0 is the leftmost pixel and 1, the rightmost pixel in the image. Y coordinates go from the top pixel 0 to the bottom pixel 1.
 
+<div align="center">
+    <img src="../images/backbones/darknet_architecture.jpeg">
+</div>
+
 ### Loss Function
 
 ## Experiments
