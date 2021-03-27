@@ -161,6 +161,8 @@ def _generate_label_matrix(self, S, boxes, class_labels, anchor_boxes):
     return label_matrix
 ```
 
+> Check for detail [code](https://github.com/DavianYang/yolo.ai/blob/main/yolo/datasets/voc.py)
+
 ## Network Structures and Features
 ### DarkNet53
 
