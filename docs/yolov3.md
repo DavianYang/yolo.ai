@@ -4,7 +4,12 @@
 
 - [Introduction](#Introduction)
 - [Data Processing](#Data-Processing)
+    - [Pascal VOC](#Pascal-VOC)
 - [Network Structure and Features](#Network-Structure-and-Features)
+    - [DarkNet53](#DarkNet53)
+    - [Implementation](#Implementation)
+    - [Anchor Boxes](#Anchor-Boxes)
+    - [Loss Function](#Loss-Function)
 - [Experiments](#Training-Experiments)
 - [How To Use](#How-To-Use)
 
@@ -303,8 +308,6 @@ class Yolov3Detector(nn.Module):
 > xmin, ymin, xmax, ymax:  coordinates of the box, in normalized image coordinates. xmin is in [0, 1] wher 0 is the leftmost pixel and 1, the rightmost pixel in the image. Y coordinates go from the top pixel 0 to the bottom pixel 1.
 
 ### Loss Function
-
-### Dataset Preprocessing
 
 ## Experiments
 
