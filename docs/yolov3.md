@@ -33,7 +33,7 @@ We will not prepare the dataset from scratch since torchvision provide us with `
 Our Dataset class will be composed of two main function ```__getitem__``` and ```_generate_label_matrix``` to output three scale of label matrix.
 
 ```python
-# voc.py:35, class VOCDataset
+# voc.py, class VOCDataset
 
 class VOCDataset(VOCDetection):
     def __init__(
@@ -64,7 +64,7 @@ class VOCDataset(VOCDetection):
 ```
 --text--
 ```python
-# voc.py: ,class VOCDataset
+# voc.py, class VOCDataset
 
 def __getitem__(self, index):
     image = Image.open(self.images[index]).convert("RGB")
@@ -83,7 +83,7 @@ def __getitem__(self, index):
 ```
 --text--
 ```python
-# voc.py: ,class VOCDataset
+# voc.py, class VOCDataset
 
 if self.transforms:
     output_labels_list = targets[:, 0].int().tolist()
@@ -98,7 +98,7 @@ if self.transforms:
 ```
 For three scale, we will generate 13, 26 and 52 scale of label matrix
 ```python
-# voc.py: ,class VOCDataset
+# voc.py, class VOCDataset
 
 small_label_matrix = self._generate_label_matrix(
     13, boxes, class_labels, copy.deepcopy(self.anchor_boxes)[2] / (416 / 13)
@@ -112,7 +112,7 @@ large_label_matrix = self._generate_label_matrix(
 ```
 --text--
 ```python
-# voc.py: ,class VOCDataset
+# voc.py, class VOCDataset
 from torchvision.ops.boxes import box_iou
 
 def _generate_label_matrix(self, S, boxes, class_labels, anchor_boxes):
@@ -147,7 +147,7 @@ def _generate_label_matrix(self, S, boxes, class_labels, anchor_boxes):
 ```
 --text--
 ```python
-# voc.py: ,class VOCDataset
+# voc.py, class VOCDataset
 
 def _generate_label_matrix(self, S, boxes, class_labels, anchor_boxes):
     label_matrix = torch.zeros(
