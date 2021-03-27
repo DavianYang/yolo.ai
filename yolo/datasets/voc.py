@@ -35,20 +35,20 @@ VOC_CLASSES = [
 class VOCDataset(VOCDetection):
     def __init__(
         self,
+        classes: list,
         anchor_boxes: list,
         root: str = './datasets',
         year: str = '2012',
         image_set: str = 'train',
         download: bool = False,
         transforms: Optional[Callable] = None,
-        num_classes: int = 20,
     ):
         super().__init__(root, year, image_set, download)
+        self.classes = classes
+        self.num_classes = len(classes)
         self.transforms = transforms
         self.anchor_boxes = torch.tensor(anchor_boxes)
-        self.num_classes = num_classes
-    
-         
+     
     def __getitem__(self, index):
         image = Image.open(self.images[index]).convert("RGB")
         
@@ -56,7 +56,7 @@ class VOCDataset(VOCDetection):
         targets = []
         for obj in root_.iter("object"):
             target = []
-            target.append(VOC_CLASSES.index(obj.find("name").text))
+            target.append(self.classes.index(obj.find("name").text))
             bbox = obj.find('bndbox')
             for xyxy in ("xmin", "ymin", "xmax", "ymax"):
                 target.append(int(bbox.find(xyxy).text))
@@ -93,11 +93,6 @@ class VOCDataset(VOCDetection):
 
         for box, class_label in zip(boxes, class_labels):
             xmin, ymin, xmax, ymax = box
-            
-            x = xmin
-            y = ymin
-            w = xmax - xmin
-            h = ymax - ymin
             
             x = xmin / 416
             y = ymin / 416
