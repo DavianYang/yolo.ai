@@ -44,8 +44,7 @@ class VOCDataset(VOCDetection):
         year: str = '2012',
         image_set: str = 'train',
         download: bool = False,
-        transforms: Optional[Callable] = None,
-        num_classes: int = 20,
+        transforms: Optional[Callable] = None
     ) -> None:
         super().__init__(root, year, image_set, download)
         self.classes = classes
