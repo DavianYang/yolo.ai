@@ -1,7 +1,6 @@
 from inspect import isfunction
 from torch import nn
 
-# Thanks to
 # https://github.com/osmr/imgclsmob/blob/68335927ba27f2356093b985bada0bc3989836b1/pytorch/pytorchcv/models/common.py
 def get_activation_layer(activation):
     assert (activation is not None)
