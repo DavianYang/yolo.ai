@@ -8,7 +8,7 @@ from cfg.detectors.yolov3_detector_cfg import small_scale_cfg, medium_scale_cfg,
 from yolo.modules.modules import ConvBlock, Upsample, ScalePrediction
 
 
-class Yolov3Detector(nn.Module):
+class YOLOv3Detector(nn.Module):
     def __init__(self, num_classes: int, num_anchors: int) -> None:
         super().__init__()
         self.num_classes = num_classes

@@ -5,7 +5,7 @@ from torch import nn
 from torch import Tensor
 
 from yolo.backbones.darknet import darknet53
-from yolo.detectors.yolov3_detector import Yolov3Detector
+from yolo.detectors.yolov3_detector import YOLOv3Detector
     
 class YOLOv3(nn.Module):
     def __init__(
@@ -18,7 +18,7 @@ class YOLOv3(nn.Module):
         self.anchor_boxes = torch.tensor(anchor_boxes)
         
         self.base_model = darknet53()
-        self.detector = Yolov3Detector(num_classes, self.num_anchors)
+        self.detector = YOLOv3Detector(num_classes, self.num_anchors)
         
     def forward(self, x: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         s, m, l = self.base_model(x)
