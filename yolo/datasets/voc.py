@@ -13,7 +13,7 @@ class VOCDataset(VOCDetection):
     def __init__(
         self,
         anchor_boxes: list,
-        grid_size: int = [13, 26, 52],
+        grid_size: int = [52, 26, 13],
         root: str = './datasets',
         year: str = '2012',
         image_set: str = 'train',
@@ -99,12 +99,12 @@ class VOCDataset(VOCDetection):
             class_labels = transformed_items["class_labels"]
             
         small_label_matrix = self._generate_label_matrix(
-            self.grid_size[0], boxes, class_labels, copy.deepcopy(self.anchor_boxes)[2] / (image.size(1) / self.grid_size[0])
+            self.grid_size[2], boxes, class_labels, copy.deepcopy(self.anchor_boxes)[2] / (image.size(1) / self.grid_size[2])
         )
         medium_label_matrix = self._generate_label_matrix(
             self.grid_size[1], boxes, class_labels, copy.deepcopy(self.anchor_boxes)[1] / (image.size(1) / self.grid_size[1])
         )
         large_label_matrix = self._generate_label_matrix(
-            self.grid_size[2], boxes, class_labels, copy.deepcopy(self.anchor_boxes)[0] / (image.size(1) / self.grid_size[2])
+            self.grid_size[1], boxes, class_labels, copy.deepcopy(self.anchor_boxes)[0] / (image.size(1) / self.grid_size[1])
         )
         return image, (small_label_matrix, medium_label_matrix, large_label_matrix)
