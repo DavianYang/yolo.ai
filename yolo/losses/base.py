@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-from yolo.utils.utils import IOU
+from yolo.metrics.functional import IOU
 
 class YOLOLoss(nn.Module):
     def __init__(self, anchor_boxes: list, grid_size: int, device: str):
