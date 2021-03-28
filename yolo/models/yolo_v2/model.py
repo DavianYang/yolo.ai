@@ -20,14 +20,13 @@ class YOLOv2(nn.Module):
         
         # Detection Head
         self.darknet_head = darknet19(mode="head")
-        self.middle = ConvBlock(512, 64, kernel_size=1, stride=1, padding=0)
+        self.middle = ConvBlock(512, 64, kernel_size=1, stride=1)
         self.space_to_depth = SpaceToDepth(block_size=2)
         self.darknet_tail = darknet19(mode="tail")
         
         self.conv = ConvBlock(1280, 1024, kernel_size=3, stride=1, padding=1)
         self.pred = nn.Conv2d(1024, self.anchor_boxes * (4 + 1 + num_classes), 
-                               kernel_size=1, stride=1, 
-                               padding=0, bias=True)
+                               kernel_size=1, stride=1, bias=True)
         
     def forward(self, x: Tensor) -> Tensor:
         x = self.darknet_head(x)
