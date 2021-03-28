@@ -11,12 +11,11 @@ class YOLOv3(nn.Module):
     def __init__(
         self, 
         anchor_boxes: list,
-        num_classes: int = 20,
-        num_anchors: int = 3
+        num_classes: int = 20
     ) -> None:
         super().__init__()
         self.anchor_boxes = torch.tensor(anchor_boxes)
-        self.num_anchors = num_anchors
+        self.num_anchors = len(anchor_boxes)
         
         self.base_model = darknet53()
         self.detector = Yolov3Detector(num_classes, num_classes)
