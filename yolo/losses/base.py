@@ -17,26 +17,13 @@ class YOLOLoss(nn.Module):
         pred = pred.permute(0, 2, 3, 1, 4)
         exist_mask = target[..., 4:5]
         existing_boxes = exist_mask * pred
-        cell_idx = torch.arange(self.grid_size, device=self.device)
         
-        bx = exist_mask * torch.sigmoid(
-            pred[..., 0:1]
-        ) + exist_mask * cell_idx.view([1, 1, -1, 1, 1])
-        by = exist_mask * torch.sigmoid(
-            pred[..., 1:2]
-        ) + exist_mask * cell_idx.view([1, -1, 1, 1, 1])
-        bw = (
-            exist_mask
-            * self.anchor_boxes[:, 2].view([1, 1, 1, -1, 1])
-            * exist_mask
-            * torch.exp(pred[..., 3:4])
-        ).to(self.device)
-        bh = (
-            exist_mask
-            * self.anchor_boxes[:, 3].view([1, 1, 1, -1, 1])
-            * exist_mask
-            * torch.exp(pred[..., 3:4])
-        )
+        # box_pred = torch.cat([
+        #     F.sigmoid(pred[..., 1:3]), # x, y
+        #     torch.exp(pred[..., 3:5]) * anchors # w, h
+        # ], dim=-1)
+        
+        bx, by, bw, bh = self._preprocess_anchor_boxes(pred, exist_mask)        
         
         ious = IOU(
             torch.cat([bx, by, bw, bh], dim=-1), target[..., :4]
@@ -63,5 +50,32 @@ class YOLOLoss(nn.Module):
                 end_dim=-2
             ),
             target[..., 5:].flatten(end_dim=-2).argmax(-1),
-        )
+        )    
+        
         return 5 * xy_loss + 5 * wh_loss + obj_loss + no_obj_loss + class_loss
+    
+    
+    def _preprocess_anchor_boxes(self, pred, exist_mask):
+        cell_idx = torch.arange(self.grid_size, device=self.device)
+    
+        bx = exist_mask * torch.sigmoid(
+            pred[..., 0:1]
+        ) + exist_mask * cell_idx.view([1, 1, -1, 1, 1])
+        by = exist_mask * torch.sigmoid(
+            pred[..., 1:2]
+        ) + exist_mask * cell_idx.view([1, -1, 1, 1, 1])
+        bw = (
+            exist_mask
+            * self.anchor_boxes[:, 2].view([1, 1, 1, -1, 1])
+            * exist_mask
+            * torch.exp(pred[..., 3:4])
+        )
+        bh = (
+            exist_mask
+            * self.anchor_boxes[:, 3].view([1, 1, 1, -1, 1])
+            * exist_mask
+            * torch.exp(pred[..., 3:4])
+        )
+
+        return bx, by, bw, bh
+        
