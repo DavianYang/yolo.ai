@@ -13,24 +13,29 @@ class VOCDataset(VOCDetection):
     def __init__(
         self,
         anchor_boxes: list,
+        classes: list,
         grid_size: int = [52, 26, 13],
         root: str = './datasets',
         year: str = '2012',
         image_set: str = 'train',
         download: bool = False,
-        transforms: Optional[Callable] = None,
-        num_classes: int = 20,
-    ):
+        transforms: Optional[Callable] = None
+    ) -> None:
         super().__init__(root, year, image_set, download)
-        self.grid_size = grid_size
-        self.transforms = transforms
         self.anchor_boxes = torch.tensor(anchor_boxes)
-        self.num_classes = num_classes
+        self.classes = classes
+        self.grid_size = grid_size
+        
+        self.num_classes = len(classes)
+        self.num_anchors = len(anchor_boxes)
+        
+        self.transforms = transforms
+        
         
     def _generate_label_matrix(self, S, boxes, class_labels, anchor_boxes):
         # Init
         label_matrix = torch.zeros(
-            (S, S, len(anchor_boxes), 5 + self.num_classes), dtype=torch.float64
+            (S, S, self.num_anchors, 5 + self.num_classes), dtype=torch.float64
         )
 
         for box, class_label in zip(boxes, class_labels):
@@ -42,16 +47,18 @@ class VOCDataset(VOCDetection):
             h = (ymax - ymin) / 416
             
             # i, j represent row and column of the cell
-            i, j = int(S * x), int(S * y)
+            i, j = int(S * x), int(S * y) # x = 0.5, S=13 --> int(6.5) = 6
             
-            x_cell, y_cell = S * x - i, S * y - j
+            x_cell, y_cell = S * x - i, S * y - j # 6.5 - 6 = 0.5
+            
+            width_cell, height_cell = (w * S, h * S)
+            
+            box_coordinate = torch.tensor([x_cell, y_cell, width_cell, height_cell])
             
             anchor_boxes[:, 0] = xmin
             anchor_boxes[:, 1] = ymin
             anchor_boxes[:, 2] = xmin + anchor_boxes[:, 2] / 2
             anchor_boxes[:, 3] = ymin + anchor_boxes[:, 3] / 2
-
-            width_cell, height_cell = (w * S, h * S)
             
             ious = box_iou(
                 anchor_boxes,
@@ -59,8 +66,6 @@ class VOCDataset(VOCDetection):
             )
             
             _, max_idx = ious.max(0)
-
-            box_coordinate = torch.tensor([x_cell, y_cell, width_cell, height_cell])
 
             # set box_coordinate
             label_matrix[j, i, max_idx[0], :4] = box_coordinate
@@ -73,19 +78,19 @@ class VOCDataset(VOCDetection):
             
              
     def __getitem__(self, index):
-        image = Image.open(self.images[index]).convert("RGB")
+        image = np.array(Image.open(self.images[index]).convert("RGB"))
         
         root_ = ET.parse(self.annotations[index]).getroot()
         targets = []
+        
         for obj in root_.iter("object"):
             target = []
-            target.append(VOC_CLASSES.index(obj.find("name").text))
+            target.append(self.classes.index(obj.find("name").text))
             bbox = obj.find('bndbox')
             for xyxy in ("xmin", "ymin", "xmax", "ymax"):
                 target.append(int(bbox.find(xyxy).text))
             targets.append(target)
         targets = torch.tensor(targets)
-        image = np.array(image)
         
         if self.transforms:
             output_labels_list = targets[:, 0].int().tolist() # this one don't need, I think
@@ -108,3 +113,5 @@ class VOCDataset(VOCDetection):
             self.grid_size[1], boxes, class_labels, copy.deepcopy(self.anchor_boxes)[0] / (image.size(1) / self.grid_size[1])
         )
         return image, (small_label_matrix, medium_label_matrix, large_label_matrix)
+    
+    #iou_width_height
