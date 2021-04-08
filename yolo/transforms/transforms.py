@@ -72,3 +72,41 @@ class Resize(nn.Module):
             bboxes[..., 3] = np.rint(scale_y * bboxes[..., 3])
         
         return img, bboxes
+    
+
+class RandomHorizontalFlip(nn.Module):
+    def __init__(self, p: float = 0.5):
+        super().__init__()
+        self.p = p
+        
+    def forward(
+        self, 
+        img: Union[torch.Tensor, np.ndarray], bboxes: Union[torch.Tensor, np.ndarray]
+        ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
+        width, _ = img.size
+        
+        if torch.rand(1) < self.p:
+            img = F.hflip(img)
+            bboxes[..., 0] = width - bboxes[..., 0] - 1
+            bboxes[..., 2] = width - bboxes[..., 2] - 1
+        
+        return img, bboxes
+    
+
+class RandomVerticalFlip(nn.Module):
+    def __init__(self, p: float = 0.5):
+        super().__init__()
+        self.p = p
+        
+    def forward(
+        self, 
+        img: Union[torch.Tensor, np.ndarray], bboxes: Union[torch.Tensor, np.ndarray]
+        ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
+        _, height = img.size
+        
+        if torch.rand(1) < self.p:
+            img = F.vflip(img)
+            bboxes[..., 1] = height - bboxes[..., 1] + 1
+            bboxes[..., 3] = height - bboxes[..., 3] + 1
+        
+        return img, bboxes
