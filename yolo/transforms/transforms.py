@@ -1,11 +1,11 @@
-""" Transform """
+"""Custom Transform """
 from typing import Optional, Union, Tuple
 import numpy as np
 from PIL import Image
 
 import torch
 import torch.nn as nn
-from torch.nn import functional as F
+from torchvision.transforms import functional as F
 
 
 class Compose(object):
@@ -22,20 +22,32 @@ class Compose(object):
 class ToTensor:
     def __call__(
         self, 
-        img: Image.Image, 
-        bboxes: np.ndarray, 
-        normalize: bool =True
+        image: Image.Image, 
+        bboxes: np.ndarray
     ):
-        img = np.array(img) 
-        img = torch.from_numpy(np.moveaxis(img / (255.0 if img.dtype == np.uint8 else 1), -1, 0).astype(np.float32))
-        bboxes = torch.from_numpy(bboxes)
-        if normalize:
-            F.normalize(img, (0.4574, 0.4385, 0.4064), (0.2704, 0.2676, 0.2814))
-        return img, bboxes
+        img = np.array(image) 
+        img = torch.from_numpy(
+            np.moveaxis(img / (255.0 if img.dtype == np.uint8 else 1), -1, 0).astype(np.float32)
+        )
     
     def __repr__(self):
         return self.__class__.__name__ + '()'
 
+
+class Normalize(nn.Module):
+    def __init__(self, mean: tuple, std: tuple, inplace=False):
+        super().__init__()
+        self.mean = mean
+        self.std = std
+        self.inplace = inplace
+    
+    def forward(
+        self, 
+        img: Union[torch.Tensor, np.ndarray], 
+        bboxes: Union[torch.Tensor, np.ndarray]
+    ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
+        return  F.normalize(img, self.mean, self.std, self.inplace), bboxes
+        
 
 class Resize(nn.Module):
     def __init__(
@@ -52,7 +64,7 @@ class Resize(nn.Module):
         self, 
         img: Union[torch.Tensor, np.ndarray], 
         bboxes: Union[torch.Tensor, np.ndarray]
-        ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
+    ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
         width, height = self.size
         old_width, old_height = img.size
         
@@ -82,7 +94,7 @@ class RandomHorizontalFlip(nn.Module):
     def forward(
         self, 
         img: Union[torch.Tensor, np.ndarray], bboxes: Union[torch.Tensor, np.ndarray]
-        ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
+    ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
         width, _ = img.size
         
         if torch.rand(1) < self.p:
@@ -101,7 +113,7 @@ class RandomVerticalFlip(nn.Module):
     def forward(
         self, 
         img: Union[torch.Tensor, np.ndarray], bboxes: Union[torch.Tensor, np.ndarray]
-        ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
+    ) -> Tuple[Union[torch.Tensor, np.ndarray], Union[torch.Tensor, np.ndarray]]:
         _, height = img.size
         
         if torch.rand(1) < self.p:
