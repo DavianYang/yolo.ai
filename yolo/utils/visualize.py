@@ -3,7 +3,7 @@ from PIL import ImageDraw
 def visualize_bbox(image, boxes, labels=None, mode="midpoint"):
     draw = ImageDraw.Draw(image)
     width, height = image.size
-    
+    # implement draw text
     for box in boxes:
         if mode == "midpoints":
             x, y, w, h = box
