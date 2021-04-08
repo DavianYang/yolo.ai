@@ -113,5 +113,3 @@ class VOCDataset(VOCDetection):
             self.grid_size[1], boxes, class_labels, copy.deepcopy(self.anchor_boxes)[0] / (image.size(1) / self.grid_size[1])
         )
         return image, (small_label_matrix, medium_label_matrix, large_label_matrix)
-    
-    #iou_width_height
