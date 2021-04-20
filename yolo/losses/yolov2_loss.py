@@ -18,4 +18,3 @@ class YOLOv2Loss(nn.Module):
     def forward(self, pred, target):
         loss = self.loss(pred, target)
         return loss
-        

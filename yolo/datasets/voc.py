@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from typing import Callable, Optional
+from typing import Callable, List, Optional, Tuple
 
 from PIL import Image
 
@@ -11,9 +11,9 @@ from yolo.metrics.functional import iou_width_height
 class VOCDataset(VOCDetection):
     def __init__(
         self,
-        anchor_boxes: list,
-        classes: list,
-        grid_size: int = [52, 26, 13],
+        anchor_boxes: List[Tuple[int]],
+        classes: List[str],
+        grid_size: List[int] = [52, 26, 13],
         root: str = './datasets',
         year: str = '2012',
         image_set: str = 'train',

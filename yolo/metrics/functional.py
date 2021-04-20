@@ -76,8 +76,6 @@ def mAP(pred_boxes, true_boxes, iou_threshold=0.5, box_format='corners', num_cla
             # take out only ground truth img
             ground_truth_img = [box for box in ground_truths if box[0] == detection[0]]
             
-            no_gt = len(ground_truth_img)
-            
             best_iou = 0
             
             for gt_idx, gt in enumerate(ground_truth_img):

@@ -19,7 +19,7 @@ class YOLOv3(nn.Module):
         self.base_model = darknet53()
         self.detector = YOLOv3Detector(num_classes, num_classes)
         
-    def forward(self, x: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
+    def forward(self, x: Tensor) -> Tuple[Tensor]:
         s, m, l = self.base_model(x)
         s, m, l = self.detector(s, m, l)
         return s, m, l

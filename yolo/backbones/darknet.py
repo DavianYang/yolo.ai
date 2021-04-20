@@ -56,7 +56,7 @@ class DarkNet53(nn.Module):
         self.part3 = make_layers(cfg[2], 256)
         self.part4 = make_layers(cfg[3], 512)
         
-    def forward(self, x: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
+    def forward(self, x: Tensor) -> Tuple[Tensor]:
         x = self.part1(x)
         large = self.part2(x)
         medium = self.part3(large)
