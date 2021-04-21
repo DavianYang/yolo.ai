@@ -6,52 +6,68 @@ model = dict(
         in_channels=3
     ),
     head=dict(
-        type='MultiScaleDetector',
+        type='YOLOv3Detector',
         num_classes=20,
-        anchors=None,
+        anchors=[
+            [(10, 13), (16, 30), (33, 23)],
+            [(30, 61), (62, 45), (59, 119)],
+            [(116, 90), (156, 198), (373, 326)]
+        ],
         nms_type='nms',
-        nms_thr=None,
-        yolo_loss_type=None,
-        ignore_thr=None,
-        box_loss=dict(type='IOU_Loss', iou_type=None),
-        confidence_loss=dict(type='Conf_Loss'),
-        class_loss=dict(type='Class Loss')
+        nms_thr=0.5,
+        yolo_loss_type='yolov3_loss',
+        ignore_thr=0.4
     )
 )
 
-img_scale = None
+img_scale = 416
 
-training_pipeline = []
-testing_pipeline = []
-val_pipeline = []
-
-yolov3_anchors = [
-    [(0.28, 0.22), (0.38, 0.48), (0.9, 0.78)],
-    [(0.07, 0.15), (0.15, 0.11), (0.14, 0.29)],
-    [(0.02, 0.03), (0.04, 0.07), (0.08, 0.06)],
+training_pipeline = [
+    dict(type='Resize',img_scale=img_scale, letterbox=False),
+    dict(type='RandomAffine',degrees=0, translate=0, scale=.5, shear=0.0),#随机放射变换
+    dict(type='RandomHSV'),
+    dict(type='RandomFlip'),
+    dict(type='Normalize'),
+    dict(type='ToTensorV2'),
 ]
 
-classes = [
-    "aeroplane",
-    "bicycle",
-    "bird",
-    "boat",
-    "bottle",
-    "bus",
-    "car",
-    "cat",
-    "chair",
-    "cow",
-    "diningtable",
-    "dog",
-    "horse",
-    "motorbike",
-    "person",
-    "pottedplant",
-    "sheep",
-    "sofa",
-    "train",
-    "tvmonitor",
+testing_pipeline = [
+    dict(type='Resize',img_scale=img_scale, letterbox=False),
+    dict(type='Normalize'),
+    dict(type='ToTensorV2'),
 ]
 
-data = dict()
+val_pipeline = [
+    dict(type='Resize',img_scale=img_scale, letterbox=False),
+    dict(type='Normalize'),
+    dict(type='ToTensorV2'),
+]
+
+data = dict(
+    batch_size=64,
+    num_workers=4,
+    voc_classes = [
+        "aeroplane",
+        "bicycle",
+        "bird",
+        "boat",
+        "bottle",
+        "bus",
+        "car",
+        "cat",
+        "chair",
+        "cow",
+        "diningtable",
+        "dog",
+        "horse",
+        "motorbike",
+        "person",
+        "pottedplant",
+        "sheep",
+        "sofa",
+        "train",
+        "tvmonitor",
+    ]
+)
+
+optimizer = dict(type='SGD', lr=1e-2, momentum=0.9, weight_decay= 5e-4)
