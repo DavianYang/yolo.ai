@@ -4,7 +4,7 @@ import torch.nn as nn
 from torch import Tensor
 
 from cfg.backbones.darknet_cfg import darknet_cfg, darknet19_cfg_head, darknet19_cfg_tail, darknet53_base_cfg
-from yolo.modules.modules import ConvBlock, ResBlock, ScalePrediction
+from yolo.models.modules.modules import ConvBlock, ResBlock
 
 def make_layers(cfg: List[tuple], in_channels: int) -> nn.Sequential:
     layers = nn.ModuleList()

@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from yolo.backbones.darknet import darknet19
-from yolo.modules.modules import ConvBlock, SpaceToDepth
+from yolo.models.backbones.darknet import darknet19
+from yolo.models.modules import ConvBlock, SpaceToDepth
 
 class YOLOv2(nn.Module):
     def __init__(

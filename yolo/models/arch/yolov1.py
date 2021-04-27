@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch import Tensor
 
-from yolo.backbones.darknet import darknet
+from yolo.models.backbones.darknet import darknet
 
 class YOLOv1(nn.Module):
     def __init__(

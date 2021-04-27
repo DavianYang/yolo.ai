@@ -6,7 +6,7 @@ from PIL import Image
 import torch
 from torchvision.datasets import VOCDetection
 
-from yolo.metrics.functional import iou_width_height
+from yolo.models.metrics.functional import iou_width_height
 
 class VOCDataset(VOCDetection):
     def __init__(

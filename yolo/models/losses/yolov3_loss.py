@@ -3,7 +3,7 @@ from typing import List, Tuple
 import torch
 from torch import nn
 
-from yolo.losses.base import YOLOLoss
+from yolo.models.losses.base import YOLOLoss
 
 class YOLOv3Loss(nn.Module):
     def __init__(

@@ -5,7 +5,7 @@ from torch import nn
 from torch import Tensor
 
 from cfg.detectors.yolov3_detector_cfg import small_scale_cfg, medium_scale_cfg, large_scale_cfg
-from yolo.modules.modules import ConvBlock, Upsample, ScalePrediction
+from yolo.models.modules.modules import ConvBlock, Upsample, ScalePrediction
 
 
 class YOLOv3Detector(nn.Module):

@@ -3,7 +3,7 @@ from typing import List, Tuple
 import torch
 from torch import nn
 
-from yolo.metrics.functional import IOU
+from yolo.models.metrics.functional import IOU
 
 class YOLOLoss(nn.Module):
     def __init__(self, anchors_boxes: List[Tuple[float]]):

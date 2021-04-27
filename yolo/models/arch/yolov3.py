@@ -4,8 +4,8 @@ import torch
 from torch import nn
 from torch import Tensor
 
-from yolo.backbones.darknet import darknet53
-from yolo.detectors.yolov3_detector import YOLOv3Detector
+from yolo.models.backbones.darknet import darknet53
+from yolo.models.detectors.yolov3_detector import YOLOv3Detector
     
 class YOLOv3(nn.Module):
     def __init__(

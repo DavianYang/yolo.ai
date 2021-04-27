@@ -4,7 +4,7 @@ from torch import nn
 from torch import Tensor
 
 from cfg.backbones.efficientnet_cfg import compound_params_dict
-from yolo.modules.modules import ConvBlock, MBConvBlock
+from yolo.models.modules.modules import ConvBlock, MBConvBlock
 
 class EfficientNet(nn.Module):
     def __init__(self, version: str, num_classes: int, base_model: list) -> None:
