@@ -35,6 +35,6 @@ yolo.ai
 # Installation
 
 # References
-https://towardsdatascience.com/dive-really-deep-into-yolo-v3-a-beginners-guide-9e3d2666280e
+- [Dive really deep into yolov3 a beginner guide](https://towardsdatascience.com/dive-really-deep-into-yolo-v3-a-beginners-guide-9e3d2666280e)
 
-https://github.com/aladdinpersson/Machine-Learning-Collection
+- [@aladdinpersson](https://github.com/aladdinpersson/Machine-Learning-Collection/tree/master/ML/Pytorch/object_detection)
