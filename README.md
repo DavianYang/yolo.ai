@@ -35,3 +35,6 @@ yolo.ai
 # Installation
 
 # References
+https://towardsdatascience.com/dive-really-deep-into-yolo-v3-a-beginners-guide-9e3d2666280e
+
+https://github.com/aladdinpersson/Machine-Learning-Collection
