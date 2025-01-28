@@ -32,5 +32,4 @@ yolo.ai
 │   │   └── modules     # Individuals modules for network building
 │   └── utils           # Utilites file for visualization and network
 ```
-# Installation
 
